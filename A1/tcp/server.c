@@ -51,8 +51,17 @@ void func(int sockfd)
 }
 
 // Driver function
-int main()
+int main(int argc, char *argv[])
 {
+	
+	if(argc != 2){
+		printf("Invalid Arguments\n");
+		printf("Usage: port\n");
+		exit(0);
+	}
+	int port = atoi(argv[1]);
+	printf("port: %i\n",port);
+	
   int sockfd, connfd, len;
   struct sockaddr_in servaddr, cli;
 
@@ -70,7 +79,7 @@ int main()
   // assign IP, PORT
   servaddr.sin_family = AF_INET;
   servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
-  servaddr.sin_port = htons(PORT);
+  servaddr.sin_port = htons(port);
 
   // Binding newly created socket to given IP and verification
   if ((bind(sockfd, (SA *)&servaddr, sizeof(servaddr))) != 0)
