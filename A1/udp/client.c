@@ -25,8 +25,18 @@ void send_chat(char *c);
 int s, slen;
 struct sockaddr_in si_other;
 
-int main(void) //// https://www.abc.se/~m6695/udp.html
+int main(int argc, char *argv[])
 {
+	
+	if(argc != 4){
+		printf("Invalid Arguments\n");
+		printf("Usage: ip port_me port_other\n");
+		exit(0);
+	}
+	char* ip = argv[1];
+	int port_me = atoi(argv[2]);
+	int port_other = atoi(argv[3]);
+
   struct sockaddr_in si_me;
   int i;
 

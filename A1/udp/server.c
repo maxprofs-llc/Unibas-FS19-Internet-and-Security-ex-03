@@ -25,8 +25,16 @@ void do_stuff();
 int s, slen;
 struct sockaddr_in si_other;
 
-int main(void)
+int main(int argc, char *argv[])
 {
+	
+	if(argc != 3){
+		printf("Invalid Arguments\n");
+		printf("Usage: port_me port_other\n");
+		exit(0);
+	}
+	int port_me = atoi(argv[1]);
+	int port_other = atoi(argv[2]);
   struct sockaddr_in si_me;
   int i;
 
@@ -37,10 +45,10 @@ int main(void)
   memset((char *)&si_me, 0, sizeof(si_me));
   memset((char *)&si_other, 0, sizeof(si_other));
   si_me.sin_family = AF_INET;
-  si_me.sin_port = htons(PORT_ME);
+  si_me.sin_port = htons(port_me);
   si_me.sin_addr.s_addr = htonl(INADDR_ANY);
   si_other.sin_family = AF_INET;
-  si_other.sin_port = htons(PORT_OTHER);
+  si_other.sin_port = htons(port_other);
   if (inet_aton(SRV_IP, &si_other.sin_addr) == 0)
   {
     fprintf(stderr, "inet_aton() failed\n");
