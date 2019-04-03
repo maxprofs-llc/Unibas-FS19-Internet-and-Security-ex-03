@@ -7,38 +7,45 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <arpa/inet.h>
+#include <sys/select.h>
 #define MAX 80
 #define PORT 8080
 #define SA struct sockaddr
+#define max(a, b) (((a) < (b)) ? (b) : (a))
 
-// Function designed for chat between client and server.
+void diep(char *s)
+{
+  perror(s);
+  exit(1);
+}
+
 void func(int sockfd)
 {
-  char buff[MAX];
-  int n;
-  // infinite loop for chat
-  for (;;)
+  while (1)
   {
-    bzero(buff, MAX);
-
-    // read the message from client and copy it in buffer
-    read(sockfd, buff, sizeof(buff));
-    // print buffer which contains the client contents
-    printf("From client: %s\t To client : ", buff);
-    bzero(buff, MAX);
-    n = 0;
-    // copy server message in the buffer
-    while ((buff[n++] = getchar()) != '\n')
-      ;
-
-    // and send that buffer to client
-    write(sockfd, buff, sizeof(buff));
-
-    // if msg contains "Exit" then server exit and chat ended.
-    if (strncmp("exit", buff, 4) == 0)
+    char buf[255];
+    fd_set set;
+    FD_ZERO(&set);
+    FD_SET(0, &set); //stdin
+    FD_SET(sockfd, &set);
+    int nfds = max(sockfd, 0) + 1;
+    int nr = select(nfds, &set, NULL, NULL, NULL);
+    if (nr < 0)
     {
-      printf("Server Exit...\n");
-      break;
+      diep("select() failed");
+    }
+    if (FD_ISSET(0, &set)) //New stdin
+    {
+      scanf("%s", buf);
+      write(sockfd, buf, sizeof(buf));
+    }
+    if (FD_ISSET(sockfd, &set))
+    {
+      if (read(sockfd, buf, sizeof(buf)) < 0)
+      {
+        return;
+      }
+      printf("recv %s\n", buf);
     }
   }
 }
