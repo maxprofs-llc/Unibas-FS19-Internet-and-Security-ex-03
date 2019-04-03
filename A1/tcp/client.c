@@ -49,8 +49,20 @@ void func(int sockfd)
   }
 }
 
-int main()
+int main(int argc, char *argv[])
 {
+	
+	if(argc != 3){
+		printf("Invalid Arguments\n");
+		printf("Usage: ip port\n");
+		exit(0);
+	}
+	char* ip = argv[1];
+	int port = atoi(argv[2]);
+	printf("ip: %s\n",ip);
+	printf("port: %i\n",port);
+	
+	
   int sockfd, connfd;
   struct sockaddr_in servaddr, cli;
 
@@ -67,8 +79,8 @@ int main()
 
   // assign IP, PORT
   servaddr.sin_family = AF_INET;
-  servaddr.sin_addr.s_addr = inet_addr("127.0.0.1");
-  servaddr.sin_port = htons(PORT);
+  servaddr.sin_addr.s_addr = inet_addr(ip);
+  servaddr.sin_port = htons(port);
 
   // connect the client socket to server socket
   if (connect(sockfd, (SA *)&servaddr, sizeof(servaddr)) != 0)
