@@ -6,28 +6,45 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <arpa/inet.h>
+#include <sys/select.h>
 #define MAX 80
 #define PORT 8080
 #define SA struct sockaddr
+#define max(a, b) (((a) < (b)) ? (b) : (a))
+
+void diep(char *s)
+{
+  perror(s);
+  exit(1);
+}
+
 void func(int sockfd)
 {
-  char buff[MAX];
-  int n;
-  for (;;)
+  while (1)
   {
-    bzero(buff, sizeof(buff));
-    printf("Enter the string : ");
-    n = 0;
-    while ((buff[n++] = getchar()) != '\n')
-      ;
-    write(sockfd, buff, sizeof(buff));
-    bzero(buff, sizeof(buff));
-    read(sockfd, buff, sizeof(buff));
-    printf("From Server : %s", buff);
-    if ((strncmp(buff, "exit", 4)) == 0)
+    char buf[255];
+    fd_set set;
+    FD_ZERO(&set);
+    FD_SET(0, &set); //stdin
+    FD_SET(sockfd, &set);
+    int nfds = max(sockfd, 0) + 1;
+    int nr = select(nfds, &set, NULL, NULL, NULL);
+    if (nr < 0)
     {
-      printf("Client Exit...\n");
-      break;
+      diep("select() failed");
+    }
+    if (FD_ISSET(0, &set)) //New stdin
+    {
+      scanf("%s", buf);
+      write(sockfd, buf, sizeof(buf));
+    }
+    if (FD_ISSET(sockfd, &set))
+    {
+      if (read(sockfd, buf, sizeof(buf)))
+      {
+        return;
+      }
+      printf("recv %s\n", buf);
     }
   }
 }
