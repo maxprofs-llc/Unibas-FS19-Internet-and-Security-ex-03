@@ -2,8 +2,11 @@
 
 import argparse
 from Crypto.Cipher import AES
+
+## USING CUSTOM PADDING BECAUSE PIP DOESN'T INSTALL THIS MODULE SOMEHOW?
 #from Crypto.Util.Padding import pad, unpad  # requires 'pycrypto' module
 from padding import pad, unpad  # requires 'pycrypto' module
+
 
 block_size = 16            # the size of the blocks after the pad function is applied
 key = b'!pre-shared-key!'  # The key used to encrypt each block
