@@ -22,3 +22,20 @@ key over and over. For a block that consists of only white pixels this results i
 
 One way to fix it is to not have data with repeating blocks or increase the block size until there are no repeating blocks anymore. This is not practicable.
 An other way to fix this is to use a mode that does not reuse the same key for each block but rather generates a new key for every block.
+
+#### Explanation
+
+The AES.MODE_CBC mode changes the key in such a way that for every block that the ciphertext depends on all previous blocks of
+plain text. This causes the key to not have repeat and therefore we don't have repeating patterns in our output.
+
+### Testing the fix
+
+```sh
+# copy first 54 bytes from tux.bmp to new.bmp
+dd if=tux.bmp of=new-fix.bmp bs=1 count=54
+
+# skip 54(header) + 16(iv) bytes from tux.encrypted, write with starting position 54 bytes
+dd if=tux-fix.encrypted of=new-fix.bmp bs=1 seek=54 skip=70
+```
+
+No repeating patterns are visible!
