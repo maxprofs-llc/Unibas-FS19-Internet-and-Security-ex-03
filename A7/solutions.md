@@ -23,7 +23,7 @@ key over and over. For a block that consists of only white pixels this results i
 One way to fix it is to not have data with repeating blocks or increase the block size until there are no repeating blocks anymore. This is not practicable.
 An other way to fix this is to use a mode that does not reuse the same key for each block but rather generates a new key for every block.
 
-#### Explanation
+#### Explanation of fix
 
 The AES.MODE_CBC mode changes the key in such a way that for every block that the ciphertext depends on all previous blocks of
 plain text. This causes the key to not have repeat and therefore we don't have repeating patterns in our output.

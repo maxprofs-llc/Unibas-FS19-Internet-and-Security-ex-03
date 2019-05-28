@@ -27,16 +27,21 @@ def write_plain(bytes, path):
 
 
 def main(args):
+    # read encrypted data
     encrypted_text = read_encrypted(args.input)
     
+    # split it into initialization vector (first 16 bytes) and data
     iv = encrypted_text[:16]
     data = encrypted_text[16:]
 
+    # create cipher with key and iv
     cipher = AES.new(key, AES.MODE_CBC, iv)
 
+    # decrypt and unpad data
     padded_plain_text = cipher.decrypt(data)
-
     plain_text = unpad(padded_plain_text, block_size)
+    
+    # write to file
     write_plain(plain_text, args.output)
 
 
