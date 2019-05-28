@@ -1,0 +1,46 @@
+#!/bin/python3
+
+import argparse
+from Crypto.Cipher import AES
+#from Crypto.Util.Padding import pad, unpad  # requires 'pycrypto' module
+from padding import pad, unpad  # requires 'pycrypto' module
+
+block_size = 16            # the size of the blocks after the pad function is applied
+key = b'!pre-shared-key!'  # The key used to encrypt each block
+
+
+def read_plain(path):
+    file = open(path, "rb")
+    bytes = file.read()
+    file.close()
+    return bytes
+
+
+def write_encrypted(bytes, path):
+    file = open(path, "wb")
+    file.write(bytes)
+    file.close()
+
+
+def main(args):
+    # create the cipher using the key and the ECB mode
+    # ECB mode uses the same key to encrypt every block of plain data
+    cipher = AES.new(key, AES.MODE_ECB)
+
+    # Read the plain data from a file and pad it so it is a 
+    # multiple of 'block_size' in length with the padding at the end 
+    # to fill the remaining space
+    plain_text = read_plain(args.input)
+    padded_plain_text = pad(plain_text, block_size)
+
+    # encrypt the padded text with the prev. created chipher and write it to a file.
+    cipher_text = cipher.encrypt(padded_plain_text)
+    write_encrypted(cipher_text, args.output)
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Alice-Bob Encryption')
+    parser.add_argument('-i', '--input', type=str, help="Path to plain file", required=True)
+    parser.add_argument('-o', '--output', type=str, help="Path of encrypted file (should not exist)", required=True)
+    args = parser.parse_args()
+    main(args)
