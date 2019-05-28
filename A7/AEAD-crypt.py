@@ -5,8 +5,7 @@ import argparse
 from aead import AEAD
 
 
-block_size = 16            # the size of the blocks after the pad function is applied
-key = b'FE24vRVUx5DATHCeo4NWMVQXwjK7uVLkV-P26Mfl3W0='  # The key used to encrypt each block
+key = b'FE24vRVUx5DATHCeo4NWMVQXwjK7uVLkV-P26Mfl3W0='  # The key used to encrypt
 
 
 def read(path):
@@ -22,38 +21,50 @@ def write(bytes, path):
     file.close()
 
 def encrypt(args):
+    # read plain data
     plain = read(args.input)
 
+    # split in header and body
     header = plain[:54]
     data = plain[54:]
 
+    # init AEAD
     cryptor = AEAD(key)
 
+    # encrypt body and add signature of header
     ct = cryptor.encrypt(data, header)
 
+    # concat header and encrypted body + signature
     out = header + ct
 
+    # write blob to file
     write(out, args.output)
 
 
 def decrypt(args):
+
+    # read encrypted data
     encrypted = read(args.input)
 
+    # split in header and encrypted body
     header = encrypted[:54]
     data = encrypted[54:]
 
     cryptor = AEAD(key)
 
+    # decrypt and verify body and verify header
     ct = cryptor.decrypt(data, header)
 
+    # write header and decrypted body to file
     out = header + ct
-
     write(out, args.output)
     
 
 
 def main(args):
 
+    # check if decrypt or encrypt
+    # decrypt with argument -d or --decrypt
     if (args.decrypt):
         decrypt(args)
     else:
