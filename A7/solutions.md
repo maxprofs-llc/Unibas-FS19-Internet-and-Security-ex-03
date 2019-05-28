@@ -1,5 +1,15 @@
 # Blatt 7
 
+## Files
+
+- tux.bmp
+- tux.encrypted - encrypted with original algorithm
+- tux-fix.encrypted - encrypted with fixed algorithm
+- new.bmp - original header + body of tux.encrypted
+- new-fix.bmp - original header + body of tux-fix.encrypted
+- padding.py - replacement for Crypto.Util.Padding because pip doesn't install it correctly somehow?
+- decrypted.bmp - same as tux.bmp: decrypted version
+
 ## Ex 1
 
 Generate new bmp file with following commands:
